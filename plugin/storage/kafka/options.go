@@ -35,23 +35,25 @@ const (
 	// EncodingZipkinThrift is used for spans encoded as Zipkin Thrift.
 	EncodingZipkinThrift = "zipkin-thrift"
 
-	configPrefix           = "kafka.producer"
-	suffixBrokers          = ".brokers"
-	suffixTopic            = ".topic"
-	suffixTopicPartitions  = ".topic-partitions"
-	suffixEncoding         = ".encoding"
-	suffixRequiredAcks     = ".required-acks"
-	suffixCompression      = ".compression"
-	suffixCompressionLevel = ".compression-level"
-	suffixProtocolVersion  = ".protocol-version"
+	configPrefix                 = "kafka.producer"
+	suffixBrokers                = ".brokers"
+	suffixTopic                  = ".topic"
+	suffixTopicPartitions        = ".topic-partitions"
+	suffixTopicReplicationFactor = ".topic-replication-factor"
+	suffixEncoding               = ".encoding"
+	suffixRequiredAcks           = ".required-acks"
+	suffixCompression            = ".compression"
+	suffixCompressionLevel       = ".compression-level"
+	suffixProtocolVersion        = ".protocol-version"
 
-	defaultBroker           = "127.0.0.1:9092"
-	defaultTopic            = "jaeger-spans"
-	defaultTopicPartitions  = 0
-	defaultEncoding         = EncodingProto
-	defaultRequiredAcks     = "local"
-	defaultCompression      = "none"
-	defaultCompressionLevel = 0
+	defaultBroker                 = "127.0.0.1:9092"
+	defaultTopic                  = "jaeger-spans"
+	defaultTopicPartitions        = 0
+	defaultTopicReplicationFactor = 0
+	defaultEncoding               = EncodingProto
+	defaultRequiredAcks           = "local"
+	defaultCompression            = "none"
+	defaultCompressionLevel       = 0
 )
 
 var (
@@ -104,10 +106,11 @@ var (
 
 // Options stores the configuration options for Kafka
 type Options struct {
-	config          producer.Configuration
-	topic           string
-	topicPartitions int
-	encoding        string
+	config                 producer.Configuration
+	topic                  string
+	topicPartitions        int
+	topicReplicationFactor int
+	encoding               string
 }
 
 // AddFlags adds flags for Options
@@ -124,6 +127,10 @@ func (opt *Options) AddFlags(flagSet *flag.FlagSet) {
 		configPrefix+suffixTopicPartitions,
 		defaultTopicPartitions,
 		"The number of partitions to create the Kafka topic with if it does not exist.  If the topic already exists this has no effect.  Leave empty to use Kafka default.")
+	flagSet.Int(
+		configPrefix+suffixTopicReplicationFactor,
+		defaultTopicReplicationFactor,
+		"The replication factor to create the Kafka topic with if it does not exist.  If the topic already exists this has no effect.  Leave empty to use Kafka default.")
 	flagSet.String(
 		configPrefix+suffixProtocolVersion,
 		"",
@@ -182,6 +189,7 @@ func (opt *Options) InitFromViper(v *viper.Viper) {
 	}
 	opt.topic = v.GetString(configPrefix + suffixTopic)
 	opt.topicPartitions = v.GetInt(configPrefix + suffixTopicPartitions)
+	opt.topicReplicationFactor = v.GetInt(configPrefix + suffixTopicReplicationFactor)
 	opt.encoding = v.GetString(configPrefix + suffixEncoding)
 }
 

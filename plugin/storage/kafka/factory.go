@@ -82,7 +82,8 @@ func (f *Factory) Initialize(metricsFactory metrics.Factory, logger *zap.Logger)
 			return err
 		}
 		details := &sarama.TopicDetail{
-			NumPartitions: int32(f.options.topicPartitions),
+			NumPartitions:     int32(f.options.topicPartitions),
+			ReplicationFactor: int16(f.options.topicReplicationFactor),
 		}
 		err = admin.CreateTopic(f.options.topic, details, false) // jpe - validate only?
 		if err != nil {

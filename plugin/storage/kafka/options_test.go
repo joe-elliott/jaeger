@@ -30,6 +30,7 @@ func TestOptionsWithFlags(t *testing.T) {
 	command.ParseFlags([]string{
 		"--kafka.producer.topic=topic1",
 		"--kafka.producer.topic-partitions=20",
+		"--kafka.producer.topic-replication-factor=2",
 		"--kafka.producer.brokers=127.0.0.1:9092, 0.0.0:1234",
 		"--kafka.producer.encoding=protobuf",
 		"--kafka.producer.required-acks=local",
@@ -39,6 +40,7 @@ func TestOptionsWithFlags(t *testing.T) {
 
 	assert.Equal(t, "topic1", opts.topic)
 	assert.Equal(t, 20, opts.topicPartitions)
+	assert.Equal(t, 2, opts.topicReplicationFactor)
 	assert.Equal(t, []string{"127.0.0.1:9092", "0.0.0:1234"}, opts.config.Brokers)
 	assert.Equal(t, "protobuf", opts.encoding)
 	assert.Equal(t, sarama.WaitForLocal, opts.config.RequiredAcks)
@@ -54,6 +56,7 @@ func TestFlagDefaults(t *testing.T) {
 
 	assert.Equal(t, defaultTopic, opts.topic)
 	assert.Equal(t, defaultTopicPartitions, opts.topicPartitions)
+	assert.Equal(t, defaultTopicReplicationFactor, opts.topicReplicationFactor)
 	assert.Equal(t, []string{defaultBroker}, opts.config.Brokers)
 	assert.Equal(t, defaultEncoding, opts.encoding)
 	assert.Equal(t, sarama.WaitForLocal, opts.config.RequiredAcks)
