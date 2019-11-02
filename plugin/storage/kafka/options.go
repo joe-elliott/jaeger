@@ -47,7 +47,7 @@ const (
 
 	defaultBroker           = "127.0.0.1:9092"
 	defaultTopic            = "jaeger-spans"
-	defaultTopicPartitions  = 30
+	defaultTopicPartitions  = 0
 	defaultEncoding         = EncodingProto
 	defaultRequiredAcks     = "local"
 	defaultCompression      = "none"
@@ -123,7 +123,7 @@ func (opt *Options) AddFlags(flagSet *flag.FlagSet) {
 	flagSet.Int(
 		configPrefix+suffixTopicPartitions,
 		defaultTopicPartitions,
-		"The number of partitions to create the Kafka topic with if it does not exist.  If the topic already exists this has no effect.")
+		"The number of partitions to create the Kafka topic with if it does not exist.  If the topic already exists this has no effect.  Leave empty to use Kafka default.")
 	flagSet.String(
 		configPrefix+suffixProtocolVersion,
 		"",
