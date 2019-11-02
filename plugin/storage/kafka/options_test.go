@@ -29,6 +29,7 @@ func TestOptionsWithFlags(t *testing.T) {
 	v, command := config.Viperize(opts.AddFlags)
 	command.ParseFlags([]string{
 		"--kafka.producer.topic=topic1",
+		"--kafka.producer.topic-partitions=20",
 		"--kafka.producer.brokers=127.0.0.1:9092, 0.0.0:1234",
 		"--kafka.producer.encoding=protobuf",
 		"--kafka.producer.required-acks=local",
@@ -37,6 +38,7 @@ func TestOptionsWithFlags(t *testing.T) {
 	opts.InitFromViper(v)
 
 	assert.Equal(t, "topic1", opts.topic)
+	assert.Equal(t, 20, opts.topicPartitions)
 	assert.Equal(t, []string{"127.0.0.1:9092", "0.0.0:1234"}, opts.config.Brokers)
 	assert.Equal(t, "protobuf", opts.encoding)
 	assert.Equal(t, sarama.WaitForLocal, opts.config.RequiredAcks)
@@ -51,6 +53,7 @@ func TestFlagDefaults(t *testing.T) {
 	opts.InitFromViper(v)
 
 	assert.Equal(t, defaultTopic, opts.topic)
+	assert.Equal(t, defaultTopicPartitions, opts.topicPartitions)
 	assert.Equal(t, []string{defaultBroker}, opts.config.Brokers)
 	assert.Equal(t, defaultEncoding, opts.encoding)
 	assert.Equal(t, sarama.WaitForLocal, opts.config.RequiredAcks)

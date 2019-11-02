@@ -38,6 +38,7 @@ const (
 	configPrefix           = "kafka.producer"
 	suffixBrokers          = ".brokers"
 	suffixTopic            = ".topic"
+	suffixTopicPartitions  = ".topic-partitions"
 	suffixEncoding         = ".encoding"
 	suffixRequiredAcks     = ".required-acks"
 	suffixCompression      = ".compression"
@@ -46,6 +47,7 @@ const (
 
 	defaultBroker           = "127.0.0.1:9092"
 	defaultTopic            = "jaeger-spans"
+	defaultTopicPartitions  = 30
 	defaultEncoding         = EncodingProto
 	defaultRequiredAcks     = "local"
 	defaultCompression      = "none"
@@ -102,9 +104,10 @@ var (
 
 // Options stores the configuration options for Kafka
 type Options struct {
-	config   producer.Configuration
-	topic    string
-	encoding string
+	config          producer.Configuration
+	topic           string
+	topicPartitions int
+	encoding        string
 }
 
 // AddFlags adds flags for Options
@@ -117,6 +120,10 @@ func (opt *Options) AddFlags(flagSet *flag.FlagSet) {
 		configPrefix+suffixTopic,
 		defaultTopic,
 		"The name of the kafka topic")
+	flagSet.Int(
+		configPrefix+suffixTopicPartitions,
+		defaultTopicPartitions,
+		"The number of partitions to create the Kafka topic with if it does not exist.  If the topic already exists this has no effect.")
 	flagSet.String(
 		configPrefix+suffixProtocolVersion,
 		"",
@@ -174,6 +181,7 @@ func (opt *Options) InitFromViper(v *viper.Viper) {
 		AuthenticationConfig: authenticationOptions,
 	}
 	opt.topic = v.GetString(configPrefix + suffixTopic)
+	opt.topicPartitions = v.GetInt(configPrefix + suffixTopicPartitions)
 	opt.encoding = v.GetString(configPrefix + suffixEncoding)
 }
 
