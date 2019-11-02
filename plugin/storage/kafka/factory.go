@@ -75,21 +75,11 @@ func (f *Factory) Initialize(metricsFactory metrics.Factory, logger *zap.Logger)
 	default:
 		return errors.New("kafka encoding is not one of '" + EncodingJSON + "' or '" + EncodingProto + "'")
 	}
-	if f.options.topicPartitions > 0 || f.options.topicReplicationFactor > 0 {
-		cfg := sarama.NewConfig()
-		admin, err := sarama.NewClusterAdmin(f.options.config.Brokers, cfg)
-		if err != nil {
-			return err
-		}
-		details := &sarama.TopicDetail{
-			NumPartitions:     int32(f.options.topicPartitions),
-			ReplicationFactor: int16(f.options.topicReplicationFactor),
-		}
-		err = admin.CreateTopic(f.options.topic, details, false) // jpe - validate only?
-		if err != nil {
-			return err
-		}
+	err = f.createTopic()
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
 
@@ -106,4 +96,35 @@ func (f *Factory) CreateSpanWriter() (spanstore.Writer, error) {
 // CreateDependencyReader implements storage.Factory
 func (f *Factory) CreateDependencyReader() (dependencystore.Reader, error) {
 	return nil, errors.New("kafka storage is write-only")
+}
+
+// createTopic attempts to create the Kafka topic if either topicPartitions or topicReplicationFactor is set and the topic does not exist
+func (f *Factory) createTopic() error {
+	if f.options.topicPartitions == 0 && f.options.topicReplicationFactor == 0 {
+		return nil
+	}
+	cfg := sarama.NewConfig()
+	cfg.Version = sarama.V0_9_0_0
+	admin, err := sarama.NewClusterAdmin(f.options.config.Brokers, cfg)
+	if err != nil {
+		return err
+	}
+	details := &sarama.TopicDetail{
+		NumPartitions:     int32(f.options.topicPartitions),
+		ReplicationFactor: int16(f.options.topicReplicationFactor),
+	}
+	topics, err := admin.ListTopics()
+	if err != nil {
+		return err
+	}
+	_, ok := topics[f.options.topic]
+	if ok {
+		return nil
+	}
+	err = admin.CreateTopic(f.options.topic, details, false)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
