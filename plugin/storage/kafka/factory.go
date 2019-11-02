@@ -75,9 +75,9 @@ func (f *Factory) Initialize(metricsFactory metrics.Factory, logger *zap.Logger)
 	default:
 		return errors.New("kafka encoding is not one of '" + EncodingJSON + "' or '" + EncodingProto + "'")
 	}
-	if f.options.topicPartitions > 0 {
+	if f.options.topicPartitions > 0 || f.options.topicReplicationFactor > 0 {
 		cfg := sarama.NewConfig()
-		admin, err := sarama.NewClusterAdmin(f.options.config.Brokers, cfg) // brokers vs. admin?
+		admin, err := sarama.NewClusterAdmin(f.options.config.Brokers, cfg)
 		if err != nil {
 			return err
 		}
