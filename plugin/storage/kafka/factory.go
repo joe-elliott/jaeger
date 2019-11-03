@@ -61,7 +61,9 @@ func (f *Factory) Initialize(metricsFactory metrics.Factory, logger *zap.Logger)
 	f.metricsFactory, f.logger = metricsFactory, logger
 	logger.Info("Kafka factory",
 		zap.Any("producer builder", f.Builder),
-		zap.Any("topic", f.options.topic))
+		zap.Any("topic", f.options.topic),
+		zap.Any("topic-partitions", f.options.topicPartitions),
+		zap.Any("topic-replication-factor", f.options.topicReplicationFactor))
 	p, err := f.NewProducer()
 	if err != nil {
 		return err
@@ -109,22 +111,17 @@ func (f *Factory) createTopic() error {
 	if err != nil {
 		return err
 	}
-	details := &sarama.TopicDetail{
-		NumPartitions:     int32(f.options.topicPartitions),
-		ReplicationFactor: int16(f.options.topicReplicationFactor),
-	}
 	topics, err := admin.ListTopics()
 	if err != nil {
 		return err
 	}
-	_, ok := topics[f.options.topic]
-	if ok {
-		return nil
+	existingTopic, ok := topics[f.options.topic]
+	desiredTopic := &sarama.TopicDetail{
+		NumPartitions:     int32(f.options.topicPartitions),
+		ReplicationFactor: int16(f.options.topicReplicationFactor),
 	}
-	err = admin.CreateTopic(f.options.topic, details, false)
-	if err != nil {
-		return err
+	if !ok || existingTopic.NumPartitions != desiredTopic.NumPartitions || existingTopic.ReplicationFactor != desiredTopic.ReplicationFactor {
+		err = admin.CreateTopic(f.options.topic, desiredTopic, false)
 	}
-
-	return nil
+	return err
 }
