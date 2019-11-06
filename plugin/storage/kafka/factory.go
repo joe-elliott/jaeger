@@ -106,22 +106,24 @@ func (f *Factory) createTopic() error {
 		return nil
 	}
 	cfg := sarama.NewConfig()
-	cfg.Version = sarama.V0_9_0_0
+	cfg.Version = sarama.V1_0_0_0
 	admin, err := sarama.NewClusterAdmin(f.options.config.Brokers, cfg)
 	if err != nil {
 		return err
+	}
+	desiredTopic := &sarama.TopicDetail{
+		NumPartitions:     int32(f.options.topicPartitions),
+		ReplicationFactor: int16(f.options.topicReplicationFactor),
 	}
 	topics, err := admin.ListTopics()
 	if err != nil {
 		return err
 	}
 	existingTopic, ok := topics[f.options.topic]
-	desiredTopic := &sarama.TopicDetail{
-		NumPartitions:     int32(f.options.topicPartitions),
-		ReplicationFactor: int16(f.options.topicReplicationFactor),
-	}
-	if !ok || existingTopic.NumPartitions != desiredTopic.NumPartitions || existingTopic.ReplicationFactor != desiredTopic.ReplicationFactor {
+	if !ok {
 		err = admin.CreateTopic(f.options.topic, desiredTopic, false)
+	} else if existingTopic.NumPartitions != desiredTopic.NumPartitions {
+		err = admin.CreatePartitions(f.options.topic, int32(f.options.topicPartitions), nil, false)
 	}
 	return err
 }
