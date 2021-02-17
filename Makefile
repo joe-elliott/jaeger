@@ -61,7 +61,8 @@ SWAGGER_IMAGE=quay.io/goswagger/swagger:$(SWAGGER_VER)
 SWAGGER=docker run --rm -it -u ${shell id -u} -v "${PWD}:/go/src/" -w /go/src/ $(SWAGGER_IMAGE)
 SWAGGER_GEN_DIR=swagger-gen
 
-JAEGER_DOCKER_PROTOBUF=jaegertracing/protobuf:0.2.0
+#JAEGER_DOCKER_PROTOBUF=jaegertracing/protobuf:0.2.0
+JAEGER_DOCKER_PROTOBUF=otel/build-protobuf:0.1.0
 
 COLOR_PASS=$(shell printf "\033[32mPASS\033[0m")
 COLOR_FAIL=$(shell printf "\033[31mFAIL\033[0m")
@@ -521,12 +522,12 @@ proto:
 	#
 	$(PROTOC) \
 		$(PROTO_INCLUDES) \
-		--gogo_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/model/ \
+		--go_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/model/ \
 		idl/proto/api_v2/model.proto
 
 	$(PROTOC) \
 		$(PROTO_INCLUDES) \
-		--gogo_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/api_v2 \
+		--go_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/api_v2 \
 		idl/proto/api_v2/query.proto
 		### grpc-gateway generates 'query.pb.gw.go' that does not respect (gogoproto.customname) = "TraceID"
 		### --grpc-gateway_out=$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/ \
@@ -534,18 +535,18 @@ proto:
 
 	$(PROTOC) \
 		$(PROTO_INCLUDES) \
-		--gogo_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/api_v2 \
+		--go_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/api_v2 \
 		idl/proto/api_v2/collector.proto
 
 	$(PROTOC) \
 		$(PROTO_INCLUDES) \
-		--gogo_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/api_v2 \
+		--go_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/api_v2 \
 		idl/proto/api_v2/sampling.proto
 
 	$(PROTOC) \
 		$(PROTO_INCLUDES) \
 		-Iplugin/storage/grpc/proto \
-		--gogo_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/storage_v1 \
+		--go_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/storage_v1 \
 		plugin/storage/grpc/proto/storage.proto
 
 	$(PROTOC) \
@@ -560,7 +561,7 @@ proto:
 
 	$(PROTOC) \
 		-Iidl/proto \
-		--gogo_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/zipkin \
+		--go_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/proto-gen/zipkin \
 		idl/proto/zipkin.proto
 
 .PHONY: proto-hotrod
