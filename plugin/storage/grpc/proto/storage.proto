@@ -22,7 +22,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
-import "model.proto";
+import "model/model.proto";
 
 // Enable gogoprotobuf extensions (https://github.com/gogo/protobuf/blob/master/extensions.md).
 // Enable custom Marshal method.

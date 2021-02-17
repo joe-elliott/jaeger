@@ -61,8 +61,8 @@ SWAGGER_IMAGE=quay.io/goswagger/swagger:$(SWAGGER_VER)
 SWAGGER=docker run --rm -it -u ${shell id -u} -v "${PWD}:/go/src/" -w /go/src/ $(SWAGGER_IMAGE)
 SWAGGER_GEN_DIR=swagger-gen
 
-JAEGER_DOCKER_PROTOBUF=jaegertracing/protobuf:0.2.0
-#JAEGER_DOCKER_PROTOBUF=otel/build-protobuf:0.1.0
+#JAEGER_DOCKER_PROTOBUF=jaegertracing/protobuf:0.2.0
+JAEGER_DOCKER_PROTOBUF=otel/build-protobuf:0.1.0
 
 COLOR_PASS=$(shell printf "\033[32mPASS\033[0m")
 COLOR_FAIL=$(shell printf "\033[31mFAIL\033[0m")
@@ -485,16 +485,17 @@ echo-version:
 PROTOC := docker run --rm -u ${shell id -u} -v${PWD}:${PWD} -w${PWD} ${JAEGER_DOCKER_PROTOBUF} --proto_path=${PWD}
 PROTO_INCLUDES := \
 	-Iidl/proto/api_v2 \
+	-Iidl/proto \
 	-I/usr/include/github.com/gogo/protobuf
 # Remapping of std types to gogo types (must not contain spaces)
-PROTO_GOGO_MAPPINGS := $(shell echo \
-		Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/types, \
-		Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types, \
-		Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types, \
-		Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types, \
-		Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api, \
-		Mmodel.proto=github.com/jaegertracing/jaeger/model \
-	| sed 's/ //g')
+# PROTO_GOGO_MAPPINGS := $(shell echo \
+# 		Mgoogle/protobuf/descriptor.proto=github.com/gogo/protobuf/types, \
+# 		Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types, \
+# 		Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types, \
+# 		Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types, \
+# 		Mgoogle/api/annotations.proto=github.com/gogo/googleapis/google/api, \
+# 		Mmodel.proto=github.com/jaegertracing/jaeger/model \
+# 	| sed 's/ //g')
 
 
 .PHONY: proto
@@ -523,7 +524,7 @@ proto:
 	$(PROTOC) \
 		$(PROTO_INCLUDES) \
 		--go_out=plugins=grpc,$(PROTO_GOGO_MAPPINGS):$(PWD)/model/ \
-		idl/proto/api_v2/model.proto
+		idl/proto/model/model.proto
 
 	$(PROTOC) \
 		$(PROTO_INCLUDES) \
