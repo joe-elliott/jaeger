@@ -7,8 +7,8 @@ require (
 	github.com/apache/thrift v0.15.0
 	github.com/bsm/sarama-cluster v2.1.13+incompatible
 	github.com/crossdock/crossdock-go v0.0.0-20160816171116-049aabb0122b
-	github.com/dgraph-io/badger/v3 v3.2103.1
-	github.com/dgraph-io/ristretto v0.1.0 // indirect
+	github.com/dgraph-io/badger/v3 v3.2103.3
+	github.com/dgraph-io/ristretto v0.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-openapi/errors v0.20.1
 	github.com/go-openapi/loads v0.20.2
@@ -54,7 +54,7 @@ require (
 	go.uber.org/zap v1.19.1
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	golang.org/x/net v0.0.0-20210917221730-978cfadd31cf
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf
+	golang.org/x/sys v0.0.0-20221010170243-090e33056c14
 	google.golang.org/grpc v1.41.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
@@ -87,7 +87,7 @@ require (
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/flatbuffers v1.12.0 // indirect
+	github.com/google/flatbuffers v1.12.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
