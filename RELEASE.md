@@ -5,7 +5,7 @@
     * A curated list of notable changes and links to PRs. Do not simply dump git log, select the changes that affect the users.
       To obtain the list of all changes run `make changelog` or use `scripts/release-notes.py`.
     * The section can be split into sub-section if necessary, e.g. UI Changes, Backend Changes, Bug Fixes, etc.
-    * If the jaeger-ui submodule has changes cut a new release and also upgrade the submodule versions then commit, for example:
+    * If the jaeger-ui submodule has changes [cut a new release](https://github.com/jaegertracing/jaeger-ui/blob/main/RELEASE.md), upgrade the submodule version here, and then commit, for example:
         ```
         cd jaeger-ui
         git ls-remote --tags origin
